@@ -19,7 +19,7 @@ export default defineSchema({
     streakFreezes: v.optional(v.number()),  // Default: 0
     equippedBorder: v.optional(v.string()), // ID of the animated border
     unlockedBorders: v.optional(v.array(v.string())), // Array of border IDs owned
-  }),
+  }).index("by_totalXp", ["totalXp"]),
 
   lessons: defineTable({
     title: v.string(),

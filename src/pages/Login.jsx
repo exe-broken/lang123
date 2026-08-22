@@ -15,7 +15,15 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try { const userId = await login({ name, password }); localStorage.setItem('userId', userId); navigate('/dashboard'); }
-    catch (err) { setError(err.message); }
+    catch (err) {
+      if (err.message?.includes('User not found')) {
+        setError('No account found with that username.');
+      }   
+      
+      else {
+        setError('Invalid password. Please try again.');
+  }
+}
     finally { setLoading(false); }
   };
 
