@@ -1,5 +1,13 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Sparkles, Check, Target, Zap, BookOpen, Flame } from "lucide-react";
+
+const ICON_MAP = {
+  '🎯': Target,
+  '⚡': Zap,
+  '📚': BookOpen,
+  '🔥': Flame,
+};
 
 export default function DailyQuests({ userId }) {
   const quests = useQuery(api.quests.getDailyProgress, userId ? { userId } : 'skip');
@@ -23,11 +31,12 @@ export default function DailyQuests({ userId }) {
         {quests.map(quest => {
           const isDone = quest.current >= quest.target;
           const pct = Math.min((quest.current / quest.target) * 100, 100);
+          const QuestIcon = ICON_MAP[quest.icon] || Target;
 
           return (
             <div key={quest.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: isDone ? quest.color : 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, transition: 'all 0.3s' }}>
-                {isDone ? '✨' : quest.icon}
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: isDone ? quest.color : 'var(--bg-elevated)', color: isDone ? '#fff' : quest.color, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+                {isDone ? <Check size={18} /> : <QuestIcon size={18} />}
               </div>
               
               <div style={{ flex: 1 }}>
@@ -50,3 +59,4 @@ export default function DailyQuests({ userId }) {
     </div>
   );
 }
+

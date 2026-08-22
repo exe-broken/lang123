@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Crown, Medal, Trophy, Flame } from "lucide-react";
 
-const MEDAL = { 1: '🥇', 2: '🥈', 3: '🥉' };
 const PODIUM_COLOR = { 1: '#f59e0b', 2: '#94a3b8', 3: '#cd7c2f' };
 
 function PodiumCard({ user, rank }) {
@@ -28,7 +28,9 @@ function PodiumCard({ user, rank }) {
         onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
         {user.name?.[0]?.toUpperCase()}
       </div>
-      <span style={{ fontSize: isFirst ? 20 : 16, marginBottom: 4 }}>{MEDAL[rank]}</span>
+      <span style={{ color, marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {rank === 1 ? <Crown size={22} color="#f59e0b" /> : rank === 2 ? <Medal size={20} color="#94a3b8" /> : <Trophy size={18} color="#cd7c2f" />}
+      </span>
       <p style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: isFirst ? 15 : 13, margin: '0 0 2px', maxWidth: 100, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</p>
       <span style={{ fontWeight: 800, fontSize: isFirst ? 20 : 15, color }}>
         {(user.totalXp || user.xp || 0).toLocaleString()} <span style={{ fontSize: '0.6em', opacity: 0.6 }}>XP</span>
@@ -62,12 +64,13 @@ function ListRow({ user, index }) {
         <span style={{ fontWeight: 600, color: 'var(--text-secondary)', fontSize: 14 }}>{user.name}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {(user.streak || 0) > 0 && <span style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border)', color: 'var(--amber)', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>🔥 {user.streak}</span>}
+        {(user.streak || 0) > 0 && <span style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border)', color: 'var(--amber)', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', gap: 4 }}><Flame size={12} /> {user.streak}</span>}
         <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent)', minWidth: 54, textAlign: 'right' }}>{(user.totalXp || user.xp || 0).toLocaleString()} XP</span>
       </div>
     </div>
   );
 }
+
 
 export default function Leaderboard() {
   const users = useQuery(api.users.getLeaderboard) || [];

@@ -3,8 +3,9 @@ import { api } from '../../convex/_generated/api';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import DailyQuests from '../components/gamification/DailyQuests';
+import { Zap, Flame, BookOpen, Target, Brain, Trophy, BarChart3, CheckCircle, Sparkles } from 'lucide-react';
 
-function StatCard({ icon, label, value, sub, color, delay }) {
+function StatCard({ icon: Icon, label, value, sub, color, delay }) {
   const [hov, setHov] = useState(false);
   return (
     <div className="glass-card" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
@@ -13,7 +14,9 @@ function StatCard({ icon, label, value, sub, color, delay }) {
         opacity: 0, animation: `fadeUp 0.4s var(--ease-out) ${delay} forwards`,
       }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{icon}</div>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', color }}>
+          <Icon size={20} />
+        </div>
         <span style={{ color: 'var(--text-muted)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px' }}>{label}</span>
       </div>
       <p style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 800, margin: '0 0 2px', letterSpacing: '-1px', lineHeight: 1 }}>{value}</p>
@@ -22,7 +25,7 @@ function StatCard({ icon, label, value, sub, color, delay }) {
   );
 }
 
-function QuickAction({ to, icon, title, desc, color }) {
+function QuickAction({ to, icon: Icon, title, desc, color }) {
   const [hov, setHov] = useState(false);
   return (
     <Link to={to} style={{ textDecoration: 'none' }}>
@@ -33,7 +36,9 @@ function QuickAction({ to, icon, title, desc, color }) {
           cursor: 'pointer',
           border: hov ? `1px solid ${color}40` : undefined,
         }}>
-        <div style={{ width: 42, height: 42, borderRadius: 12, background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{icon}</div>
+        <div style={{ width: 42, height: 42, borderRadius: 12, background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
+          <Icon size={20} />
+        </div>
         <div style={{ flex: 1 }}>
           <p style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 700, margin: '0 0 2px' }}>{title}</p>
           <p style={{ color: 'var(--text-muted)', fontSize: 12, margin: 0 }}>{desc}</p>
@@ -55,7 +60,6 @@ function DailyGoalRing({ dailyXp, dailyGoal, animate }) {
   const goalMet = dailyXp >= dailyGoal;
 
   const ringColor = goalMet ? '#2ecc71' : 'var(--accent)';
-  const emoji = goalMet ? '🎯' : '🔥';
   const statusText = goalMet ? 'Goal reached!' : `${Math.round(pct)}% complete`;
 
   return (
@@ -88,7 +92,9 @@ function DailyGoalRing({ dailyXp, dailyGoal, animate }) {
           position: 'absolute', inset: 0,
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         }}>
-          <span style={{ fontSize: 28, marginBottom: 2 }}>{emoji}</span>
+          <div style={{ color: ringColor, marginBottom: 4 }}>
+            {goalMet ? <CheckCircle size={28} /> : <Flame size={28} />}
+          </div>
           <span style={{
             color: ringColor, fontSize: 22, fontWeight: 900, lineHeight: 1,
           }}>
@@ -170,7 +176,7 @@ function DailyGoalSetter({ currentGoal, userId }) {
         color: 'var(--text-faint)', fontSize: 11, margin: '8px 0 0',
         textAlign: 'center',
       }}>
-        {activeGoal <= 30 ? '🌱 Casual' : activeGoal <= 50 ? '💪 Regular' : activeGoal <= 100 ? '🔥 Serious' : '🏆 Intense'} pace
+        {activeGoal <= 30 ? 'Casual' : activeGoal <= 50 ? 'Regular' : activeGoal <= 100 ? 'Serious' : 'Intense'} pace
       </p>
     </div>
   );
@@ -216,7 +222,6 @@ export default function Dashboard() {
   return (
     <div style={{ padding: '32px 24px', maxWidth: 800, margin: '0 auto' }}>
 
-
       {/* Welcome */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, opacity: 0, animation: 'fadeDown 0.4s var(--ease-out) 60ms forwards' }}>
         <div className={user.equippedBorder ? user.equippedBorder.replace(/_/g, '-') : ''} style={{
@@ -233,17 +238,17 @@ export default function Dashboard() {
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.8px' }}>
-            Welcome back, <span style={{ color: 'var(--accent)' }}>{user.name}</span> 👋
+            Welcome back, <span style={{ color: 'var(--accent)' }}>{user.name}</span>
           </h1>
         </div>
       </div>
 
       {/* Stats grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
-        <StatCard icon="⚡" label="Total XP" value={xp.toLocaleString()} color="var(--accent)" delay="120ms" />
-        <StatCard icon="🔥" label="Streak" value={streak} sub="days in a row" color="#f59e0b" delay="180ms" />
-        <StatCard icon="📚" label="Lessons" value={lessonCount} sub="available" color="var(--purple)" delay="240ms" />
-        <StatCard icon="🎯" label="Level" value={level} sub={`${pct}% to next`} color="var(--sky)" delay="300ms" />
+        <StatCard icon={Zap} label="Total XP" value={xp.toLocaleString()} color="var(--accent)" delay="120ms" />
+        <StatCard icon={Flame} label="Streak" value={streak} sub="days in a row" color="#f59e0b" delay="180ms" />
+        <StatCard icon={BookOpen} label="Lessons" value={lessonCount} sub="available" color="var(--purple)" delay="240ms" />
+        <StatCard icon={Target} label="Level" value={level} sub={`${pct}% to next`} color="var(--sky)" delay="300ms" />
       </div>
 
       {/* Two-col layout: daily goal + level progress */}
@@ -310,8 +315,8 @@ export default function Dashboard() {
             {dueReviews.map(lesson => (
               <div key={lesson._id} className="glass-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239, 68, 68, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                    🧠
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Brain size={20} />
                   </div>
                   <div>
                     <p style={{ color: 'var(--text-primary)', fontSize: 15, fontWeight: 700, margin: '0 0 2px' }}>{lesson.title}</p>
@@ -340,11 +345,11 @@ export default function Dashboard() {
       <div style={{ opacity: 0, animation: 'fadeUp 0.4s var(--ease-out) 500ms forwards' }}>
         <span style={{ color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block', marginBottom: 12 }}>Quick Actions</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <QuickAction to="/lessons" icon="📚" title="Continue Learning" desc="Pick up where you left off" color="var(--accent)" />
-          <QuickAction to="/leaderboard" icon="🏆" title="Leaderboard" desc="See how you rank" color="#f59e0b" />
-          <QuickAction to="/profile" icon="📊" title="Your Progress" desc="View detailed stats & achievements" color="var(--purple)" />
+          <QuickAction to="/lessons" icon={BookOpen} title="Continue Learning" desc="Pick up where you left off" color="var(--accent)" />
+          <QuickAction to="/leaderboard" icon={Trophy} title="Leaderboard" desc="See how you rank" color="#f59e0b" />
+          <QuickAction to="/profile" icon={BarChart3} title="Your Progress" desc="View detailed stats & achievements" color="var(--purple)" />
         </div>
       </div>
     </div>
   );
-}
+}

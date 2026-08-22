@@ -5,7 +5,7 @@ import os
 import io
 import tempfile
 from gtts import gTTS
-from whisper_service import transcribe
+from transcription import transcribe
 from pronunciation import assess
 
 app = Flask(__name__)
@@ -25,6 +25,7 @@ def assess_audio():
     data = request.json
     phrase = data['phrase']
     language = data['language'].lower()
+    phonetics = data.get('phonetics', '')
 
     # --- Accept either audio_url or audio_base64 ---
     if 'audio_base64' in data:
@@ -44,15 +45,23 @@ def assess_audio():
             tmp.write(audio_bytes)
             tmp_path = tmp.name
 
-        print(f"[DEBUG] file size: {os.path.getsize(tmp_path)} bytes")
+        print(f"[DEBUG] Processing audio file size: {os.path.getsize(tmp_path)} bytes for language '{language}'")
 
-        transcription = transcribe(tmp_path, lang_code)
-        phonetics = data.get('phonetics', '')
+        # 1. Preprocess audio (format conversion, noise reduction, volume normalization, silence trimming)
+        preprocessed_path = tmp_path
+        try:
+            from audio_preprocessor import preprocess
+            preprocessed_path, _ = preprocess(tmp_path)
+        except Exception as prep_err:
+            print(f"[PREPROCESS WARN] Preprocessing failed, proceeding with raw audio: {prep_err}")
+            preprocessed_path = tmp_path
+
+        # 2. Local Whisper transcription (100% offline, zero rate limits, prompt-grounded)
+        transcription = transcribe(preprocessed_path, language, phrase=phrase, phonetics=phonetics)
+
+        
+        # 3. Local scoring + optional AI tip (safe fallback if Gemini rate-limited)
         accuracy, word_breakdown, ai_tip = assess(transcription, phrase, phonetics, language)
-
-        safe_transcription = transcription.encode('ascii', 'backslashreplace').decode('ascii')
-        print(f"[DEBUG] transcription: '{safe_transcription}'")
-        print(f"[DEBUG] accuracy: {accuracy}%")
 
         return jsonify({
             'transcription': transcription,
@@ -67,6 +76,9 @@ def assess_audio():
     finally:
         if tmp_path and os.path.exists(tmp_path):
             os.remove(tmp_path)
+        if 'preprocessed_path' in locals() and preprocessed_path and preprocessed_path != tmp_path and os.path.exists(preprocessed_path):
+            os.remove(preprocessed_path)
+
 
 @app.route('/tts', methods=['POST'])
 def text_to_speech():
@@ -78,10 +90,15 @@ def text_to_speech():
     if not phrase:
         return jsonify({'error': 'No phrase provided'}), 400
 
+    import re
+    cleaned_phrase = re.sub(r'\(.*?\)', '', phrase).strip()
+    if not cleaned_phrase:
+        cleaned_phrase = phrase
+
     lang_code = LANGUAGE_CODES.get(language, language[:2])
 
     try:
-        tts = gTTS(text=phrase, lang=lang_code, slow=True)
+        tts = gTTS(text=cleaned_phrase, lang=lang_code, slow=True)
         audio_buffer = io.BytesIO()
         tts.write_to_fp(audio_buffer)
         audio_buffer.seek(0)

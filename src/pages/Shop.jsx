@@ -1,11 +1,12 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
+import { Gem, Zap, Crown, Flame, Snowflake, Shield } from "lucide-react";
 
 const BORDERS = [
-  { id: "border_neon", name: "Cyber Neon", price: 100, desc: "A pulsing cyan and magenta outline", class: "border-neon", icon: "⚡" },
-  { id: "border_gold", name: "Royal Gold", price: 250, desc: "Shimmering gold gradient", class: "border-gold", icon: "👑" },
-  { id: "border_fire", name: "Inferno", price: 500, desc: "Blazing animated fire ring", class: "border-fire", icon: "🔥" },
+  { id: "border_neon", name: "Cyber Neon", price: 100, desc: "A pulsing cyan and magenta outline", class: "border-neon", icon: Zap },
+  { id: "border_gold", name: "Royal Gold", price: 250, desc: "Shimmering gold gradient", class: "border-gold", icon: Crown },
+  { id: "border_fire", name: "Inferno", price: 500, desc: "Blazing animated fire ring", class: "border-fire", icon: Flame },
 ];
 
 export default function Shop() {
@@ -44,8 +45,6 @@ export default function Shop() {
 
   return (
     <div style={{ padding: '32px 24px', maxWidth: 800, margin: '0 auto' }}>
-      
-
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, animation: 'fadeDown 0.4s var(--ease-out)' }}>
@@ -54,7 +53,7 @@ export default function Shop() {
           <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Spend your hard-earned gems!</p>
         </div>
         <div style={{ background: 'var(--bg-elevated)', padding: '12px 24px', borderRadius: 99, border: '2px solid #0ea5e9', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 24 }}>💎</span>
+          <Gem size={22} color="#0ea5e9" />
           <span style={{ color: '#0ea5e9', fontWeight: 800, fontSize: 20 }}>{gems}</span>
         </div>
       </div>
@@ -63,7 +62,9 @@ export default function Shop() {
       <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: 'var(--text-muted)' }}>Utilities</h2>
       <div className="glass-panel" style={{ padding: '24px', marginBottom: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ fontSize: 40 }}>🧊</div>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Snowflake size={26} />
+          </div>
           <div>
             <h3 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 700 }}>Streak Freeze</h3>
             <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>Miss a day without losing your streak. You have {streakFreezes}.</p>
@@ -80,7 +81,7 @@ export default function Shop() {
           }}
         >
           {buying === 'streak_freeze' ? '...' : (
-            <><span>50</span> 💎</>
+            <><span>50</span> <Gem size={16} /></>
           )}
         </button>
       </div>
@@ -91,11 +92,14 @@ export default function Shop() {
         {BORDERS.map(b => {
           const isOwned = unlockedBorders.includes(b.id);
           const isEquipped = equippedBorder === b.id;
+          const BorderIcon = b.icon;
 
           return (
             <div key={b.id} className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-                <div className={`border-demo ${b.class}`}>{b.icon}</div>
+                <div className={`border-demo ${b.class}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <BorderIcon size={20} />
+                </div>
                 <div>
                   <h3 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 700 }}>{b.name}</h3>
                   <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 13 }}>{b.desc}</p>
@@ -115,7 +119,7 @@ export default function Shop() {
                     }}
                   >
                     {buying === b.id ? '...' : (
-                      <><span>{b.price}</span> 💎</>
+                      <><span>{b.price}</span> <Gem size={16} /></>
                     )}
                   </button>
                 ) : (
@@ -141,3 +145,4 @@ export default function Shop() {
     </div>
   );
 }
+

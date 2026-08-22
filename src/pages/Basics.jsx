@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useLanguage, SOUTH_INDIAN_LANGUAGES } from "../components/hooks/useLanguage";
+import { useLanguage } from "../components/hooks/useLanguage";
 import { BASICS_DATA } from "../data/basics";
 import ListenButton from "../components/speech/ListenButton";
+import { Type } from "lucide-react";
 
 const TABS = ["Vowels", "Consonants", "Numbers"];
+
 
 function BasicCard({ item, language, delay }) {
   const [hov, setHov] = useState(false);
@@ -59,9 +61,11 @@ export default function Basics() {
       {/* Header */}
       <div style={{ marginBottom: 32, opacity: 0, animation: 'fadeDown 0.4s var(--ease-out) 60ms forwards' }}>
         <span style={{ color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.2px' }}>Foundations</span>
-        <h1 style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 800, margin: '4px 0 0', letterSpacing: '-0.8px' }}>
-          {current.emoji} {language} Basics
+        <h1 style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 800, margin: '4px 0 0', letterSpacing: '-0.8px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Type size={28} color="var(--accent)" /> {language} Basics
         </h1>
+
+
         <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '6px 0 0' }}>
           Learn the essential letters and numbers. Use the language switcher to change languages!
         </p>

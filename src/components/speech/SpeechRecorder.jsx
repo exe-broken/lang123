@@ -232,7 +232,7 @@ export default function SpeechRecorder({ phrase, displayPhrase, language, userId
         {!phonetics && <div style={{ marginBottom: 18 }} />}
         {/* Listen button */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-          <ListenButton phrase={displayPhrase || phrase} language={language} size={48} />
+          <ListenButton phrase={phrase} displayPhrase={displayPhrase} language={language} size={48} />
           <span style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '500' }}>Tap to hear pronunciation</span>
         </div>
       </div>

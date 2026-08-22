@@ -3,14 +3,15 @@ import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "../components/hooks/useLanguage";
+import { Check, Lock, Star, Sparkles, Bot, Wrench, BookOpen } from "lucide-react";
 
 const LANG_META = {
-  Kannada:  { color: '#22c55e', emoji: '🟢' },
-  Tamil:    { color: '#8b5cf6', emoji: '🟣' },
-  Telugu:   { color: '#f59e0b', emoji: '🟠' },
-  Malayalam:{ color: '#f43f5e', emoji: '🩷' },
-  Tulu:     { color: '#0ea5e9', emoji: '🩵' },
-  Kodava:   { color: '#d97706', emoji: '🟡' },
+  Kannada:  { color: '#22c55e' },
+  Tamil:    { color: '#8b5cf6' },
+  Telugu:   { color: '#f59e0b' },
+  Malayalam:{ color: '#f43f5e' },
+  Tulu:     { color: '#0ea5e9' },
+  Kodava:   { color: '#d97706' },
 };
 
 function PathNode({ lesson, status, color, index }) {
@@ -52,7 +53,7 @@ function PathNode({ lesson, status, color, index }) {
           border: 'none', cursor: isLocked ? 'not-allowed' : 'pointer',
           background: isLocked ? 'var(--bg-elevated)' : (isPassed ? '#eab308' : color),
           color: isLocked ? 'var(--text-faint)' : '#fff',
-          fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: isLocked 
             ? '0 6px 0 var(--border-subtle)' 
             : `0 6px 0 ${isPassed ? '#ca8a04' : (color + 'aa')}`,
@@ -65,7 +66,7 @@ function PathNode({ lesson, status, color, index }) {
           marginBottom: 12
         }}
       >
-        {isPassed ? '✓' : (isLocked ? '🔒' : '⭐')}
+        {isPassed ? <Check size={28} /> : (isLocked ? <Lock size={24} /> : <Star size={28} fill="#fff" color="#fff" />)}
       </button>
 
       {/* Tooltip (shows on hover or if current) */}
@@ -86,8 +87,6 @@ function PathNode({ lesson, status, color, index }) {
           </p>
         )}
       </div>
-
-
     </div>
   );
 }
@@ -104,7 +103,9 @@ function CustomLessonRow({ lesson, index, color }) {
           transition: 'all 0.18s var(--ease-out)', cursor: 'pointer',
           marginBottom: 2, border: '1px dashed var(--border-subtle)'
         }}>
-        <span style={{ fontSize: 24 }}>🤖</span>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--accent-bg)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Bot size={20} />
+        </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lesson.title}</p>
           <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '2px 8px', borderRadius: 999, background: 'var(--accent-bg)', color: 'var(--accent)' }}>AI Generated</span>
@@ -125,7 +126,7 @@ export default function Lessons() {
   const generateLesson = useAction(api.ai.generateCustomLesson);
   const createLesson = useMutation(api.lessons.create);
 
-  const meta = LANG_META[language] || { color: 'var(--text-muted)', emoji: '📖' };
+  const meta = LANG_META[language] || { color: 'var(--text-muted)' };
   const color = meta.color;
 
   if (!lessons) return (
@@ -157,8 +158,8 @@ export default function Lessons() {
     <div style={{ padding: '32px 24px', maxWidth: 600, margin: '0 auto', paddingBottom: 100 }}>
       {/* Header */}
       <div style={{ marginBottom: 40, opacity: 0, animation: 'fadeDown 0.4s var(--ease-out) forwards', textAlign: 'center' }}>
-        <h1 style={{ color: 'var(--text-primary)', fontSize: 32, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.8px' }}>
-          {current.emoji} {language}
+        <h1 style={{ color: 'var(--text-primary)', fontSize: 32, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <BookOpen size={30} color={color} /> {language} Learning Path
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: 15, margin: 0 }}>
           Follow the path to master the language
@@ -168,7 +169,9 @@ export default function Lessons() {
       {/* The Path */}
       {unitArray.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 24px' }}>
-          <span style={{ fontSize: 40, display: 'block', marginBottom: 16 }}>🚧</span>
+          <div style={{ width: 56, height: 56, borderRadius: 16, background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--text-muted)' }}>
+            <Wrench size={28} />
+          </div>
           <p style={{ color: 'var(--text-primary)', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Path Under Construction</p>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>No structured lessons available for {language} yet.</p>
         </div>
@@ -185,9 +188,6 @@ export default function Lessons() {
                 <div style={{ position: 'relative', zIndex: 2 }}>
                   <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 4px', letterSpacing: '-0.5px' }}>Unit {u.unit}</h2>
                   <p style={{ fontSize: 15, margin: 0, opacity: 0.9, fontWeight: 600 }}>{u.topic}</p>
-                </div>
-                <div style={{ position: 'absolute', right: -20, top: -20, fontSize: 120, opacity: 0.15, transform: 'rotate(15deg)' }}>
-                  {current.emoji}
                 </div>
               </div>
 
@@ -236,7 +236,7 @@ export default function Lessons() {
               });
             }).catch(err => {
               alert("Failed to generate lesson: " + err.message);
-              if (btn) btn.innerText = "✨ Generate Custom Lesson";
+              if (btn) btn.innerText = "Generate Custom Lesson";
             });
           }}
           style={{
@@ -249,7 +249,8 @@ export default function Lessons() {
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = '#fff'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--accent)'; }}
         >
-          <span id="ai-btn-text">✨ Generate Custom Lesson</span>
+          <Sparkles size={18} />
+          <span id="ai-btn-text">Generate Custom Lesson</span>
         </button>
 
         {customLessons.length > 0 && (
@@ -260,4 +261,4 @@ export default function Lessons() {
       </div>
     </div>
   );
-}
+}

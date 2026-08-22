@@ -9,11 +9,27 @@ import { useState, useRef, useCallback } from "react";
  *  - language (string)  – e.g. "Kannada", "Tamil", etc.
  *  - size     (number)  – button diameter in px, default 44
  */
-export default function ListenButton({ phrase, language, size = 44 }) {
+function getTtsText(phrase, displayPhrase) {
+  let target = phrase || displayPhrase || "";
+
+  // If phrase is English but displayPhrase contains native script (non-ASCII), prefer displayPhrase
+  if (phrase && displayPhrase && /^[a-zA-Z0-9\s.,?!'\-]+$/.test(phrase.trim())) {
+    if (/[^\x00-\x7F]/.test(displayPhrase)) {
+      target = displayPhrase;
+    }
+  }
+
+  const cleaned = target.replace(/\(.*?\)/g, "").trim();
+  return cleaned || target;
+}
+
+export default function ListenButton({ phrase, displayPhrase, language, size = 44 }) {
   const [state, setState] = useState("idle"); // idle | loading | playing
   const audioRef = useRef(null);
   const blobUrlRef = useRef(null);
   const cachedPhraseRef = useRef(null);
+
+  const phraseToSpeak = getTtsText(phrase, displayPhrase);
 
   const play = useCallback(async () => {
     // If already playing, stop it
@@ -28,11 +44,11 @@ export default function ListenButton({ phrase, language, size = 44 }) {
 
     try {
       // If we already fetched this phrase, reuse the cached blob URL
-      if (!blobUrlRef.current || cachedPhraseRef.current !== phrase) {
+      if (!blobUrlRef.current || cachedPhraseRef.current !== phraseToSpeak) {
         const res = await fetch("http://localhost:5000/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phrase, language }),
+          body: JSON.stringify({ phrase: phraseToSpeak, language }),
         });
 
         if (!res.ok) throw new Error(`TTS error: ${res.status}`);
@@ -40,7 +56,7 @@ export default function ListenButton({ phrase, language, size = 44 }) {
         if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
         const blob = await res.blob();
         blobUrlRef.current = URL.createObjectURL(blob);
-        cachedPhraseRef.current = phrase;
+        cachedPhraseRef.current = phraseToSpeak;
       }
 
       const audio = new Audio(blobUrlRef.current);
@@ -53,7 +69,7 @@ export default function ListenButton({ phrase, language, size = 44 }) {
       console.error("TTS failed:", err);
       setState("idle");
     }
-  }, [phrase, language, state]);
+  }, [phraseToSpeak, language, state]);
 
   const icon = state === "loading" ? "⏳" : state === "playing" ? "⏸" : "🔊";
   const label =

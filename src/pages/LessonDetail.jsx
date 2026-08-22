@@ -43,7 +43,7 @@ export default function LessonDetail() {
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <ListenButton phrase={lesson.phrase} language={lesson.language} size={42} />
+            <ListenButton phrase={lesson.phrase} displayPhrase={lesson.displayPhrase} language={lesson.language} size={42} />
             <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Listen to pronunciation</span>
           </div>
         </div>

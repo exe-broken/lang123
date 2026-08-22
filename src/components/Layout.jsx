@@ -3,14 +3,15 @@ import LanguageSwitcher from './layout/LanguageSwitcher';
 import { useTheme } from './hooks/useTheme';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import { LayoutDashboard, Type, BookOpen, Gem, Trophy, User, Sun, Moon } from 'lucide-react';
 
 const NAV = [
-  { to: '/dashboard', label: 'Dashboard', icon: '🏠' },
-  { to: '/basics', label: 'Basics', icon: '🔤' },
-  { to: '/lessons', label: 'Lessons', icon: '📚' },
-  { to: '/shop', label: 'Shop', icon: '💎' },
-  { to: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
-  { to: '/profile', label: 'Profile', icon: '👤' },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/basics', label: 'Basics', icon: Type },
+  { to: '/lessons', label: 'Lessons', icon: BookOpen },
+  { to: '/shop', label: 'Shop', icon: Gem },
+  { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+  { to: '/profile', label: 'Profile', icon: User },
 ];
 
 export default function Layout({ children }) {
@@ -36,7 +37,7 @@ export default function Layout({ children }) {
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {NAV.map(({ to, label, icon }) => {
+            {NAV.map(({ to, label, icon: Icon }) => {
               const active = loc.pathname.startsWith(to) || (to === '/lessons' && (loc.pathname.startsWith('/lesson/') || loc.pathname.startsWith('/practice/')));
               return (
                 <Link key={to} to={to} style={{
@@ -49,7 +50,7 @@ export default function Layout({ children }) {
                 }}
                   onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.background = 'var(--bg-elevated)'; } }}
                   onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'transparent'; } }}>
-                  <span style={{ fontSize: 15 }}>{icon}</span><span>{label}</span>
+                  <Icon size={16} /><span>{label}</span>
                 </Link>
               );
             })}
@@ -59,7 +60,7 @@ export default function Layout({ children }) {
             
             {user && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'var(--bg-elevated)', borderRadius: 12, border: '1px solid #0ea5e955', color: '#0ea5e9', fontWeight: 700, fontSize: 14 }}>
-                <span style={{ fontSize: 14 }}>💎</span> {user.gems || 0}
+                <Gem size={15} /> {user.gems || 0}
               </div>
             )}
 
@@ -69,12 +70,12 @@ export default function Layout({ children }) {
                 width: 36, height: 36, borderRadius: 10,
                 background: 'var(--bg-elevated)', border: '1px solid var(--border-default)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, cursor: 'pointer',
-                transition: 'all 0.2s',
+                cursor: 'pointer', transition: 'all 0.2s',
+                color: 'var(--text-primary)'
               }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-subtle)'}
               onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-elevated)'}>
-              {isDark ? '☀️' : '🌙'}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             <LanguageSwitcher />
           </div>
@@ -88,4 +89,4 @@ export default function Layout({ children }) {
       </footer>
     </div>
   );
-}
+}
